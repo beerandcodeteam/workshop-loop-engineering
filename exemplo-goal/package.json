@@ -1,0 +1,12 @@
+{
+  "name": "exemplo-goal",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cenario de demonstracao para /goal — Loop Engineering",
+  "scripts": {
+    "test": "node --test test/",
+    "check": "node scripts/check-pendencias.mjs",
+    "verify": "bash verify.sh"
+  }
+}
