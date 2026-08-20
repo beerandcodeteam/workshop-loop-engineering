@@ -9,7 +9,7 @@
 export function subtotal(itens) {
   let acc = 0;
   for (const item of itens) {
-    acc += item.precoCentavos;
+    acc += item.precoCentavos * item.quantidade;
   }
   return acc;
 }
@@ -25,7 +25,7 @@ export function aplicarDesconto(centavos, percentual) {
   if (percentual < 0 || percentual > 100) {
     throw new RangeError(`percentual invalido: ${percentual}`);
   }
-  return centavos - (centavos * percentual) / 100;
+  return Math.round(centavos - (centavos * percentual) / 100);
 }
 
 /**
@@ -34,8 +34,7 @@ export function aplicarDesconto(centavos, percentual) {
  * @returns {number} centavos
  */
 export function frete(centavos) {
-  // TODO: confirmar com o produto se o frete gratis e a partir de 200 ou acima de 200
-  if (centavos > 20000) return 0;
+  if (centavos >= 20000) return 0;
   return 1990;
 }
 
@@ -46,7 +45,9 @@ export function frete(centavos) {
  */
 export function formatarBRL(centavos) {
   const reais = centavos / 100;
-  return `R$ ${reais.toFixed(2).replace('.', ',')}`;
+  const [inteiro, decimal] = reais.toFixed(2).split('.');
+  const comMilhar = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `R$ ${comMilhar},${decimal}`;
 }
 
 /**
@@ -56,7 +57,6 @@ export function formatarBRL(centavos) {
  * @returns {number} centavos
  */
 export function total(itens, percentualDesconto = 0) {
-  const bruto = subtotal(itens);
-  const comFrete = bruto + frete(bruto);
-  return aplicarDesconto(comFrete, percentualDesconto);
+  const comDesconto = aplicarDesconto(subtotal(itens), percentualDesconto);
+  return comDesconto + frete(comDesconto);
 }
